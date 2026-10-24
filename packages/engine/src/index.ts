@@ -10,3 +10,5 @@ export { roll } from './roll';
 export { legalMoves } from './legalMoves';
 export { applyMove } from './applyMove';
 export { squareFor, trackIndex, isSafeTrackIndex, type SquareRef } from './boardGeometry';
+export { pickBotMove } from './bots/pickBotMove';
+export type { BotLevel } from './bots/botLevel';
