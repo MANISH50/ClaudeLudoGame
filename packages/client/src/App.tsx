@@ -3,6 +3,7 @@ import type { GameRunner, Seat } from './runner/GameRunner';
 import { LocalRunner } from './runner/LocalRunner';
 import { loadSettings, saveSettings, type Settings } from './settings/settings';
 import { describeEvents } from './announce/describeEvent';
+import { useSoundEffects } from './sound/useSoundEffects';
 import { Header } from './components/Header';
 import { SettingsDrawer } from './components/SettingsDrawer';
 import { RulesSheet } from './components/RulesSheet';
@@ -33,6 +34,7 @@ export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const sessionRef = useRef<Session | null>(null);
   const sessionCount = useRef(0);
+  const { playEvents } = useSoundEffects(settings);
 
   useEffect(() => {
     document.documentElement.dataset['theme'] = settings.theme;
@@ -40,13 +42,15 @@ export function App() {
   }, [settings]);
 
   // Announcements and the switch to the result screen both follow runner updates.
+  // Sound rides the same subscription: once per commit, and never for the seeded opening state.
   useEffect(() => {
     if (session === null) return;
     return session.runner.subscribe((snapshot) => {
       setAnnouncement(describeEvents(snapshot.state.events));
+      playEvents(snapshot.state.events);
       if (snapshot.state.turn.phase === 'over') setScreen('result');
     });
-  }, [session]);
+  }, [session, playEvents]);
 
   const startGame = (seats: readonly Seat[]) => {
     sessionRef.current?.runner.dispose();
@@ -76,6 +80,8 @@ export function App() {
         onRules={() => setRulesOpen(true)}
         onSettings={() => setSettingsOpen(true)}
         onHome={screen === 'home' ? undefined : goHome}
+        soundOn={settings.sound}
+        onToggleSound={() => setSettings((current) => ({ ...current, sound: !current.sound }))}
       />
       <main id="main" className="app-main">
         {screen === 'home' && <HomeScreen onStart={startGame} />}

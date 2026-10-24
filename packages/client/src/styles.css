@@ -237,6 +237,19 @@ body {
   gap: 4px;
 }
 
+.mute-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mute-icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
 /* Buttons and controls */
 
 .btn {
@@ -1075,6 +1088,15 @@ body {
   }
   .header-actions .btn {
     padding: 0 10px;
+  }
+  /* The icon carries the mute state visually; the label stays for screen readers only. */
+  .mute-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
   .app-main {
     padding-inline: 10px;

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { Settings, Theme } from '../settings/settings';
+import type { Settings, Theme, Volume } from '../settings/settings';
 import { SegmentedControl } from './SegmentedControl';
 
 export interface SettingsDrawerProps {
@@ -49,6 +49,28 @@ export function SettingsDrawer({ open, settings, onChange, onClose }: SettingsDr
             <span className="toggle-sub">When you have only one legal move, play it for you.</span>
           </span>
         </label>
+        <label className="toggle-row">
+          <input
+            type="checkbox"
+            checked={settings.sound}
+            onChange={(event) => onChange({ ...settings, sound: event.target.checked })}
+          />
+          <span>
+            <span className="toggle-title">Sound effects</span>
+            <span className="toggle-sub">Dice, moves, captures, and wins. Synthesized, no audio files.</span>
+          </span>
+        </label>
+        <SegmentedControl
+          name="volume"
+          legend="Volume"
+          value={settings.volume}
+          options={[
+            { value: 'low', label: 'Low' },
+            { value: 'medium', label: 'Medium' },
+            { value: 'high', label: 'High' },
+          ]}
+          onChange={(value) => onChange({ ...settings, volume: value as Volume })}
+        />
       </div>
     </dialog>
   );
