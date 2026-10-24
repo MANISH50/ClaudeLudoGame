@@ -18,6 +18,46 @@ export async function announcements(page: Page): Promise<string[]> {
   return page.evaluate(() => (window as unknown as { announcements: string[] }).announcements ?? []);
 }
 
+// Replaces AudioContext with a stub that counts the sound nodes the client creates.
+// Tones use oscillators and the dice rattle uses a buffer source, so both are counted.
+// Headless Chromium has no audio device, so checking what the client asks for is the test.
+export async function spySound(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const counter = { nodes: 0 };
+    (window as unknown as { soundNodes: { nodes: number } }).soundNodes = counter;
+    const param = { setValueAtTime() {}, linearRampToValueAtTime() {}, exponentialRampToValueAtTime() {} };
+    const node = { connect() {}, disconnect() {} };
+    class FakeAudioContext {
+      readonly sampleRate = 44100;
+      readonly currentTime = 0;
+      readonly state = 'running';
+      readonly destination = {};
+      createOscillator() {
+        counter.nodes += 1;
+        return { ...node, type: 'sine', frequency: param, start() {}, stop() {} };
+      }
+      createGain() {
+        return { ...node, gain: param };
+      }
+      createBuffer(_channels: number, length: number) {
+        return { getChannelData: () => new Float32Array(length) };
+      }
+      createBufferSource() {
+        counter.nodes += 1;
+        return { ...node, buffer: null, start() {} };
+      }
+      resume() {
+        return Promise.resolve();
+      }
+    }
+    (window as unknown as { AudioContext: unknown }).AudioContext = FakeAudioContext;
+  });
+}
+
+export async function soundNodeCount(page: Page): Promise<number> {
+  return page.evaluate(() => (window as unknown as { soundNodes: { nodes: number } }).soundNodes.nodes);
+}
+
 // Plays the current human turn to its end: roll, then move whenever a move is offered,
 // until the colour tag shows the turn has passed to `nextPlayer`.
 export async function finishHumanTurn(page: Page, nextPlayer: string): Promise<void> {

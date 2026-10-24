@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { announcements, finishHumanTurn, recordAnnouncements } from './helpers';
+import { announcements, finishHumanTurn, recordAnnouncements, soundNodeCount, spySound } from './helpers';
 
 test.describe('smoke', () => {
   test('vs bots: roll, make a move, and the live region announces both', async ({ page }) => {
@@ -47,5 +47,50 @@ test.describe('smoke', () => {
 
     await finishHumanTurn(page, 'Player 1');
     await expect(page.locator('.turn-colour')).toHaveText('Player 1');
+  });
+
+  test('sound: a roll plays sound by default', async ({ page }) => {
+    await spySound(page);
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start vs bots' }).click();
+
+    await expect(page.getByRole('button', { name: 'Roll the dice' })).toBeEnabled();
+    await page.getByRole('button', { name: 'Roll the dice' }).click();
+    await expect.poll(() => soundNodeCount(page)).toBeGreaterThan(0);
+  });
+
+  test('sound: mute silences effects, and the choice survives a reload', async ({ page }) => {
+    await spySound(page);
+    await recordAnnouncements(page);
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start vs bots' }).click();
+    await expect(page.getByRole('heading', { name: 'Your turn' })).toBeVisible();
+
+    const mute = page.getByRole('button', { name: 'Mute', exact: true });
+    await mute.click();
+    await expect(mute).toHaveAttribute('aria-pressed', 'true');
+
+    const before = await soundNodeCount(page);
+    await page.getByRole('button', { name: 'Roll the dice' }).click();
+    // The roll must actually happen, or the silence would prove nothing.
+    await expect
+      .poll(async () => (await announcements(page)).some((line) => /Red rolled \d/.test(line)))
+      .toBe(true);
+    expect(await soundNodeCount(page)).toBe(before);
+
+    await page.reload();
+    await expect(page.getByRole('button', { name: 'Mute', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('reactions: a reaction floats over the board, shows on the card, and is announced', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start pass and play' }).click();
+    await expect(page.locator('.turn-colour')).toHaveText('Player 1');
+
+    await page.getByRole('button', { name: 'Laughing' }).click();
+
+    await expect(page.locator('.reaction-float', { hasText: '😂' })).toBeVisible();
+    await expect(page.locator('.player-card--red .player-reaction')).toHaveText('😂');
+    await expect(page.getByTestId('reaction-announcer')).toHaveText('Red reacted 😂');
   });
 });
