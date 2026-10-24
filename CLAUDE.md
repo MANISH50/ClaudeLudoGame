@@ -1,7 +1,13 @@
 # CLAUDE.md: Ludo Web App
 
 Read `Spec.md` first. It is the source of truth for scope, rules, protocol, and acceptance criteria. If code and spec disagree, ask or update the spec explicitly. Do not silently drift.
+## We cautious
+- **Follow existing conventions:** Reuse the defined architecture, tech stack, database schema, and coding patterns. Avoid unnecessary dependencies or redesigns.
+- **Concise responses:** Focus on relevant decisions and actionable changes. Avoid unnecessary explanations, repetition, and lengthy code snippets.
+- **Token efficiency:** Prefer minimal context, targeted file reads, and focused changes. Do not repeat information which is already documented.
+- **Clarify conflicts:** If a request conflicts with `@SPEC.md` or leaves a critical ambiguity, ask before proceeding.
 
+Prioritize correctness, consistency, and minimal token usage.
 ## Project summary
 
 Single-page, good-looking Ludo game. Online multiplayer via room codes, offline vs bots, pass-and-play. Standard Ludo rules.
