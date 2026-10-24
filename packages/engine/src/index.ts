@@ -1,0 +1,12 @@
+export { COLORS, type Color } from './color';
+export { DEFAULT_RULES, type Rules } from './rules';
+export type { Die, GameConfig, GameState, PlayerState, TurnState } from './state';
+export type { ExtraRollReason, GameEvent } from './events';
+export type { Move } from './move';
+export type { Rng } from './rng';
+export { IllegalActionError } from './errors';
+export { createGame } from './createGame';
+export { roll } from './roll';
+export { legalMoves } from './legalMoves';
+export { applyMove } from './applyMove';
+export { squareFor, trackIndex, isSafeTrackIndex, type SquareRef } from './boardGeometry';
