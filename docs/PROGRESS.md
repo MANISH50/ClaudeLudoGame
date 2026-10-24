@@ -1,5 +1,13 @@
 # Progress
 
+## Sound and emoji reactions (offline modes): done
+
+- **Sound:** synthesized with Web Audio (no audio files). One sound per commit, by priority (win > finish > home > capture > step > dice). Mute button in the header and a settings toggle; volume low, medium, high. Untested by ear in automation: please listen in a real browser.
+- **Reactions:** six fixed emoji on the game screen. Floats over the board, a bubble on the sender's card, and a separate `reaction-announcer` live region. Bots react about 35% of the time to captures and finishes.
+- **Assumption:** a human reaction goes to the current human seat, else the first human seat. Pass and play has no per-device identity, so this is the default until M3 seats exist.
+
+**Still open (M4):** music loop, confetti on win.
+
 ## M2 Board UI and offline vs bot: done
 
 Verified: `npm run lint`, `npm run typecheck`, `npm run build`, `npm test` (13 files, 104 tests), and `npm run e2e` (2 smoke tests) all exit 0.
