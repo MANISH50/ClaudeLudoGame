@@ -846,7 +846,8 @@ body {
 
 /* Players */
 
-.players-panel {
+.players-panel,
+.reaction-card {
   padding: 14px;
   border-radius: 20px;
   background: var(--surface);
@@ -1080,6 +1081,86 @@ body {
   margin-top: 18px;
 }
 
+/* Reactions: one row of six emoji under the players. Each button is a 44 px touch target. */
+
+.reaction-bar {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.reaction-button {
+  min-width: 0;
+  min-height: var(--touch);
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  font: inherit;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.reaction-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.reaction-button:active {
+  transform: translateY(0);
+}
+
+.reaction-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Floats sit over the board and never take pointer input, like the roll callout. */
+.reaction-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.reaction-float {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1;
+  text-shadow: var(--shadow-sm);
+  animation: reaction-float 1600ms ease-out both;
+}
+
+@keyframes reaction-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%) scale(0.5);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 120px)) scale(1);
+  }
+}
+
+/* The sender's latest emoji, shown on their card for a few seconds. */
+.player-reaction {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
 /* Phones: keep everything inside 360 px and let the board own the width. */
 
 @media (max-width: 380px) {
@@ -1129,7 +1210,8 @@ body {
   .token-pop,
   .token--movable .token-body,
   .board-svg[data-turn] .quadrant-fill,
-  .destination {
+  .destination,
+  .reaction-float {
     animation: none !important;
   }
 }

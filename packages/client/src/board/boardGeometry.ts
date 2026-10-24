@@ -109,6 +109,12 @@ export function quadrantRect(color: Color): Rect {
   return turnRect(RED_QUADRANT, quarterTurnsFor(color));
 }
 
+// Where a player's corner sits, used to anchor effects that belong to that player.
+export function quadrantCentre(color: Color): Point {
+  const rect = quadrantRect(color);
+  return { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+}
+
 export function baseSlotPoints(color: Color): Point[] {
   return RED_BASE_SLOTS.map((p) => turn(p, quarterTurnsFor(color)));
 }

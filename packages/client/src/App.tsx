@@ -34,7 +34,7 @@ export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const sessionRef = useRef<Session | null>(null);
   const sessionCount = useRef(0);
-  const { playEvents } = useSoundEffects(settings);
+  const { playEvents, play } = useSoundEffects(settings);
 
   useEffect(() => {
     document.documentElement.dataset['theme'] = settings.theme;
@@ -86,7 +86,7 @@ export function App() {
       <main id="main" className="app-main">
         {screen === 'home' && <HomeScreen onStart={startGame} />}
         {screen === 'game' && session !== null && (
-          <GameScreen key={session.id} runner={session.runner} settings={settings} />
+          <GameScreen key={session.id} runner={session.runner} settings={settings} playSound={play} />
         )}
         {screen === 'result' && session !== null && (
           <ResultScreen
